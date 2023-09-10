@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "SharpACS local",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${env:USERPROFILE}/.dotnet/tools/dotnet-lambda-test-tool-6.0.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}/SharpACS/src/SharpACS/",
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development",
+                "AWS_PROFILE": "CostPipeFrontend"
+            }
+        }
+    ]
+}

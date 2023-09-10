@@ -1,0 +1,62 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Parameters": {
+        "S3Bucketname": {
+            "Type": "String"
+        },
+        "S3Path": {
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "SharpACSRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "SharpACSRole",
+                "Description": "Execution role for SharpACS lambda function",
+                "ManagedPolicyArns": [
+                    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                ],
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "SharpACSLambda": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+                "FunctionName": "SharpACS",
+                "Handler": "FunctionHandler",
+                "Code": {
+                    "S3Bucket": { "Ref" : "S3Bucketname" },
+                    "S3Key": { "Ref" : "S3Path" }
+                },
+                "Architectures": [
+                    "arm64"
+                ],
+                "Timeout": 15,
+                "Role": {
+                    "Fn::GetAtt": [
+                        "SharpACSRole",
+                        "Arn"
+                    ]
+                },
+                "Runtime": "dotnet6"
+            }
+        }
+    }
+}
