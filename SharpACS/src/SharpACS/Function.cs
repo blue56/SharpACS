@@ -21,21 +21,11 @@ public class Function
     /// <param name="input"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public string FunctionHandler(SQSEvent sqsEvent, ILambdaContext context)
+    public string FunctionHandler(AWSCostExplorerRequest Request, ILambdaContext context)
     {
-        var records = sqsEvent.Records;
-
-        foreach (var record in records)
-        {
-            // Process each record
-            string content = record.Body;
-
-            // Deserialize
-            var r = JsonSerializer.Deserialize<AWSCostExplorerRequest>(content);
-
             // Execute request
             AWSCostExplorer ce = new AWSCostExplorer();
-            var costList = ce.Execute(r);
+            var costList = ce.Execute(Request);
 
             // Write json file to S3
             // Write report-<year>-<month>.json
@@ -48,8 +38,8 @@ public class Function
             string jsonString = JsonSerializer.Serialize(costList, options);
             var stream = GenerateStreamFromString(jsonString);
 
-            SaveFile(r.Region, r.S3Bucketname, r.S3Path, stream, "application/json");
-        }
+            SaveFile(Request.Region, Request.S3Bucketname, 
+                Request.S3Path, stream, "application/json");
 
         return "OK";
     }
