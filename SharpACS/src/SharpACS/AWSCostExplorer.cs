@@ -45,17 +45,17 @@ namespace SharpACS
             Amazon.Organizations.Model.ListAccountsRequest listAccountsRequest
                 = new Amazon.Organizations.Model.ListAccountsRequest();
 
-            var accountsResponse = amazonOrganizationsClient.ListAccountsAsync(listAccountsRequest).Result;
+            ListAccountsResponse accountsResponse = amazonOrganizationsClient.ListAccountsAsync(listAccountsRequest).Result;
 
             List<Account> accountList = new List<Account>();
             accountList.AddRange(accountsResponse.Accounts);
 
             if (accountsResponse.NextToken != null)
-            {
+            {                
                 do
                 {
                     listAccountsRequest.NextToken = accountsResponse.NextToken;
-                    var nextResponse = amazonOrganizationsClient.ListAccountsAsync(listAccountsRequest).Result;
+                    accountsResponse = amazonOrganizationsClient.ListAccountsAsync(listAccountsRequest).Result;
                 }
                 while (accountsResponse.NextToken != null);
             }
