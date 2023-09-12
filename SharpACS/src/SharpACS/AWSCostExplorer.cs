@@ -51,11 +51,12 @@ namespace SharpACS
             accountList.AddRange(accountsResponse.Accounts);
 
             if (accountsResponse.NextToken != null)
-            {                
+            {
                 do
                 {
                     listAccountsRequest.NextToken = accountsResponse.NextToken;
                     accountsResponse = amazonOrganizationsClient.ListAccountsAsync(listAccountsRequest).Result;
+                    accountList.AddRange(accountsResponse.Accounts);
                 }
                 while (accountsResponse.NextToken != null);
             }
