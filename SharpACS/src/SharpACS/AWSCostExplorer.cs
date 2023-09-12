@@ -9,6 +9,7 @@ using Amazon.CostExplorer;
 using Amazon.Organizations;
 using System.Globalization;
 using System.Text.Json;
+using Amazon.Organizations.Model;
 
 namespace SharpACS
 {
@@ -18,11 +19,11 @@ namespace SharpACS
         {
             List<GroupDefinition> _groupDefinitions = new List<GroupDefinition>();
 
-/*            GroupDefinition groupDefinition1 = new GroupDefinition();
-            groupDefinition1.Type = "COST_CATEGORY";
-            groupDefinition1.Key = CostCategoryName;
-            _groupDefinitions.Add(groupDefinition1);
-*/
+            /*            GroupDefinition groupDefinition1 = new GroupDefinition();
+                        groupDefinition1.Type = "COST_CATEGORY";
+                        groupDefinition1.Key = CostCategoryName;
+                        _groupDefinitions.Add(groupDefinition1);
+            */
             string groupBy2Type = "DIMENSION";
             string groupBy2Key = "LINKED_ACCOUNT";
 
@@ -46,7 +47,20 @@ namespace SharpACS
 
             var accountsResponse = amazonOrganizationsClient.ListAccountsAsync(listAccountsRequest).Result;
 
-            var accounts = accountsResponse.Accounts;
+            List<Account> accountList = new List<Account>();
+            accountList.AddRange(accountsResponse.Accounts);
+
+            if (accountsResponse.NextToken != null)
+            {
+                do
+                {
+                    listAccountsRequest.NextToken = accountsResponse.NextToken;
+                    var nextResponse = amazonOrganizationsClient.ListAccountsAsync(listAccountsRequest).Result;
+                }
+                while (accountsResponse.NextToken != null);
+            }
+
+            var accounts = accountList.ToArray();
 
             // Start Cost Explorer
 
