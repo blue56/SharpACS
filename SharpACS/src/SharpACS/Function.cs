@@ -21,27 +21,34 @@ public class Function
     /// <param name="input"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public string FunctionHandler(AWSCostExplorerRequest Request, ILambdaContext context)
+    public SharpACSResponse FunctionHandler(AWSCostExplorerRequest Request, ILambdaContext context)
     {
-            // Execute request
-            AWSCostExplorer ce = new AWSCostExplorer();
-            var costList = ce.Execute(Request);
+        // Execute request
+        AWSCostExplorer ce = new AWSCostExplorer();
+        var costList = ce.Execute(Request);
 
-            // Write json file to S3
-            // Write report-<year>-<month>.json
-            JsonSerializerOptions options = new()
-            {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                WriteIndented = true
-            };
+        // Write json file to S3
+        // Write report-<year>-<month>.json
+        JsonSerializerOptions options = new()
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            WriteIndented = true
+        };
 
-            string jsonString = JsonSerializer.Serialize(costList, options);
-            var stream = GenerateStreamFromString(jsonString);
+        string jsonString = JsonSerializer.Serialize(costList, options);
+        var stream = GenerateStreamFromString(jsonString);
 
-            SaveFile(Request.Region, Request.S3Bucketname, 
-                Request.S3Path, stream, "application/json");
+        SaveFile(Request.Region, Request.S3Bucketname,
+            Request.S3Path, stream, "application/json");
 
-        return "OK";
+        SharpACSResponse response = new SharpACSResponse();
+        response.S3Bucketname = Request.S3Bucketname;
+        response.S3Path = Request.S3Path;
+        response.Region = Request.Region;
+        response.Year = Request.Year;
+        response.Month = Request.Month;
+
+        return response;
     }
 
     public void SaveFile(string Region, string S3Bucketname, string S3Path, Stream Stream, string ContentType)
