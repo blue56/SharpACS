@@ -9,6 +9,9 @@ namespace SharpACS
 {
     public class Cost
     {
+        // E.g. Clean Company Azure tenant
+        public string Connection { get; set; }
+        
         // E.g. AWS or Azure
         public string Service { get; set; }
 
@@ -16,20 +19,12 @@ namespace SharpACS
         public string ResourceId { get; set; }
         public string ResourceType { get; set; }
 
-        public int Year { get; set; }
-        public int Month { get; set; }
+        public string Period { get; set; }
 
         // Cost name is used to match the cost to a resource 
         public string Name { get; set; }
 
         public decimal Amount { get; set; }
         public string Currency { get; set; }
-
-        // Final = true if the cost will not change. 
-        // E.g. if the period has ended
-        // The provider is the only one to decide if it is finale
-        public bool Final { get; set; }
-
-        public string Provider {get; set;}
     }
 }

@@ -1,6 +1,6 @@
 namespace SharpACS
 {
-    public class MonthSummaryResponse : Response
+    public class SummaryResponse : Response
     {
         public string Region { get; set; }
         public int Year { get; set; }

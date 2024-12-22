@@ -29,44 +29,12 @@ public class Function
             var r = (SummaryRequest)Request;
             r.Run();
 
-            MonthSummaryResponse response = new MonthSummaryResponse();
+            SummaryResponse response = new SummaryResponse();
             response.S3Bucketname = r.S3Bucketname;
             response.S3Path = r.S3KeyPattern;
             response.Region = r.Region;
 
             return response;
-        }
-        else if (Request is AWSCostExplorerRequest)
-        {
-/*            
-            AWSCostExplorer ce = new AWSCostExplorer();
-
-            AWSCostExplorerRequest aer = (AWSCostExplorerRequest)Request;
-            var costList = ce.Execute(aer);
-
-            // Write json file to S3
-            // Write report-<year>-<month>.json
-            JsonSerializerOptions options = new()
-            {
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                WriteIndented = true
-            };
-
-            string jsonString = JsonSerializer.Serialize(costList, options);
-            var stream = GenerateStreamFromString(jsonString);
-
-            SaveFile(aer.Region, aer.S3Bucketname,
-                aer.S3Path, stream, "application/json");
-
-            SharpACSResponse response = new SharpACSResponse();
-            response.S3Bucketname = aer.S3Bucketname;
-            response.S3Path = aer.S3Path;
-            response.Region = aer.Region;
-            response.Year = aer.Year;
-            response.Month = aer.Month;
-
-            return response;
- */ 
         }
 
         return null;
