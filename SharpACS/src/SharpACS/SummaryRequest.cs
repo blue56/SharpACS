@@ -10,6 +10,7 @@ namespace SharpACS
 {
     public class SummaryRequest : Request
     {
+        public string Connection { get; set; }
         public string AccessKey { get; set; }
         public string SecretKey { get; set; }
         public string Region { get; set; }
@@ -138,12 +139,14 @@ namespace SharpACS
                 Cost cost = new Cost();
                 var a = decimal.Parse(amountStr, usCulture);
 
+                cost.Service = "AWS";
+                cost.Connection = Connection;
                 cost.Amount = System.Math.Round(a, 2);
                 cost.Currency = curreny;
+                cost.Period = period.ToPeriodString();
 
                 cost.ResourceId = accountId;
                 cost.ResourceType = "Account";
-                //cost.Name = account.Name + " (" + account.Id + ")";
 
                 if (account != null)
                     cost.Name = account.Name;
