@@ -21,34 +21,55 @@ public class Function
     /// <param name="input"></param>
     /// <param name="context"></param>
     /// <returns></returns>
-    public SharpACSResponse FunctionHandler(AWSCostExplorerRequest Request, ILambdaContext context)
+    public Response FunctionHandler(Request Request, ILambdaContext context)
     {
         // Execute request
-        AWSCostExplorer ce = new AWSCostExplorer();
-        var costList = ce.Execute(Request);
-
-        // Write json file to S3
-        // Write report-<year>-<month>.json
-        JsonSerializerOptions options = new()
+        if (Request is SummaryRequest)
         {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            WriteIndented = true
-        };
+            var r = (SummaryRequest)Request;
+            r.Run();
 
-        string jsonString = JsonSerializer.Serialize(costList, options);
-        var stream = GenerateStreamFromString(jsonString);
+            MonthSummaryResponse response = new MonthSummaryResponse();
+            response.S3Bucketname = r.S3Bucketname;
+            response.S3Path = r.S3KeyPattern;
+            response.Region = r.Region;
 
-        SaveFile(Request.Region, Request.S3Bucketname,
-            Request.S3Path, stream, "application/json");
+            return response;
+        }
+        else if (Request is AWSCostExplorerRequest)
+        {
+/*            
+            AWSCostExplorer ce = new AWSCostExplorer();
 
-        SharpACSResponse response = new SharpACSResponse();
-        response.S3Bucketname = Request.S3Bucketname;
-        response.S3Path = Request.S3Path;
-        response.Region = Request.Region;
-        response.Year = Request.Year;
-        response.Month = Request.Month;
+            AWSCostExplorerRequest aer = (AWSCostExplorerRequest)Request;
+            var costList = ce.Execute(aer);
 
-        return response;
+            // Write json file to S3
+            // Write report-<year>-<month>.json
+            JsonSerializerOptions options = new()
+            {
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                WriteIndented = true
+            };
+
+            string jsonString = JsonSerializer.Serialize(costList, options);
+            var stream = GenerateStreamFromString(jsonString);
+
+            SaveFile(aer.Region, aer.S3Bucketname,
+                aer.S3Path, stream, "application/json");
+
+            SharpACSResponse response = new SharpACSResponse();
+            response.S3Bucketname = aer.S3Bucketname;
+            response.S3Path = aer.S3Path;
+            response.Region = aer.Region;
+            response.Year = aer.Year;
+            response.Month = aer.Month;
+
+            return response;
+ */ 
+        }
+
+        return null;
     }
 
     public void SaveFile(string Region, string S3Bucketname, string S3Path, Stream Stream, string ContentType)
